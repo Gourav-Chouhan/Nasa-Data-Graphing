@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+
+
+    <canvas id="cvs" width="800" height="400"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
+
+    <script>
+        const ctx = document.getElementById("cvs").getContext("2d");
+
+
+
+        chartIt()
+
+
+        async function chartIt() {
+            const labels = await getData();
+            xLabels = labels.xLabels;
+            yLabels = labels.yLabels;
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xLabels,
+                    datasets: [{
+                        label: 'Global average temprature',
+                        data: yLabels,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+            });
+        }
+
+
+
+        async function getData() {
+            xLabels = [];
+            yLabels = [];
+
+            const response = await fetch("ZonAnn.Ts+dSST.csv");
+            const data = await response.text();
+            const table = data.split("\n");
+            table.shift()
+            for (let i = 0; i < table.length; i++) {
+                table[i] = table[i].split(",").slice(0, 2)
+                for (let j = 0; j < table[i].length; j++) {
+                    table[i][j] = parseFloat(table[i][j])
+                }
+                xLabels.push(table[i][0])
+                yLabels.push(table[i][1] + 14)
+            }
+            console.table(table)
+            return {
+                xLabels,
+                yLabels
+            }
+        }
+    </script>
+    <!-- <script src="p5.js"></script>
+    <script src="sketch.js"></script> -->
+</body>
+
+</html>
